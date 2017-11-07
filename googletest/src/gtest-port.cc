@@ -878,8 +878,13 @@ const char kUnknownFile[] = "unknown file";
 // Formats a source file path and a line number as they would appear
 // in an error message from the compiler used to compile this code.
 GTEST_API_ ::std::string FormatFileLocation(const char* file, int line) {
-  const std::string file_name(file == NULL ? kUnknownFile : file);
-
+#ifdef _MSC_VER
+  const size_t max_path = 1024;
+  char full[max_path];
+  const std::string file_name(file == NULL ? kUnknownFile : (_fullpath( full, file, max_path) == NULL ? kUnknownFile : full));
+#else
+  const std::string file_name(file == NULL ? kUnknownFile : file);  
+#endif
   if (line < 0) {
     return file_name + ":";
   }
